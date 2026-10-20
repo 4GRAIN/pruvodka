@@ -82,10 +82,8 @@
     </div>
 
     <a class="btn primary" id="poslat" href="#">Odeslat do skupiny</a>
-    <button class="btn ghost" id="kopirovat" type="button">Kopírovat text</button>
     <button class="btn ghost" id="nova" type="button">Nová zakázka (jiná firma)</button>
     <p class="hint" id="hint">Vyber dílenskou skupinu a odešli. Pak na svou zprávu dej <b>Odpovědět</b> a přilož fotky. Další forma stejné firmy = otevři znovu, firma zůstane. Jiná firma = Nová zakázka.</p>
-    <pre id="nahled"></pre>
   </div>
 </main>
 
@@ -164,7 +162,6 @@
     ["forma", "co", "maskovani", "abrazivo", "leptani", "sprej", "tukani", "zavareni", "rozlesteni", "kresleni", "dezen", "leskpred", "leskpo", "hodiny", "pozn"].forEach(function (id) { document.getElementById(id).value = ""; });
     pisk = ""; document.querySelectorAll("#pisk button").forEach(function (x) { x.classList.remove("on"); });
     lidi = "2"; document.querySelectorAll("#lidi button").forEach(function (x) { x.classList.toggle("on", x.dataset.v === "2"); });
-    document.getElementById("nahled").style.display = "none";
     hint.textContent = "Odesláno. Formulář je připravený na další formu, hlavička zůstala.";
     window.scrollTo({ top: 0, behavior: "smooth" }); document.getElementById("forma").focus();
   }
@@ -183,11 +180,6 @@
   document.getElementById("nova").addEventListener("click", function () {
     try { localStorage.removeItem("pruvodka-firma"); localStorage.removeItem("pruvodka-kde"); } catch (e) {}
     window.location.reload();
-  });
-  document.getElementById("kopirovat").addEventListener("click", function () {
-    var t = text(), pre = document.getElementById("nahled"); pre.textContent = t; pre.style.display = "block";
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function () { hint.textContent = "Zkopírováno. Vlož do skupiny a přihoď fotky."; }, function () { hint.textContent = "Označ text níže a zkopíruj ručně."; });
-    else hint.textContent = "Označ text níže a zkopíruj ručně.";
   });
 })();
 </script>
