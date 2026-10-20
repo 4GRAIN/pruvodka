@@ -39,6 +39,8 @@
   .btn { display: block; width: 100%; padding: 15px; border-radius: 12px; border: 0; font: inherit; font-weight: 700; font-size: 18px; text-align: center; text-decoration: none; cursor: pointer; margin-top: 10px; }
   .primary { background: var(--accent); color: var(--accent-ink); } .ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
   .hint { color: var(--muted); font-size: 13px; text-align: center; margin-top: 8px; }
+  .navod { font-size: 14px; line-height: 1.45; color: var(--ink); background: var(--card); border-radius: 12px; padding: 10px 12px; margin: 0 0 12px; }
+  .navod ol { margin: 6px 0; padding-left: 20px; } .navod li { margin: 2px 0; }
   pre { white-space: pre-wrap; font: 14px/1.35 ui-monospace, Menlo, monospace; background: var(--card); border-radius: 12px; padding: 12px; display: none; margin-top: 8px; }
   #gate { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; z-index: 9; }
   #gate input { font-size: 28px; letter-spacing: 8px; text-align: center; width: 180px; padding: 10px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); }
@@ -49,7 +51,15 @@
 <div id="gate"><div style="font-weight:700;font-size:18px">Průvodka – 1 forma</div><input id="pin" inputmode="numeric" maxlength="4" placeholder="PIN" autofocus><div class="hint" id="gatehint">Zadej PIN dílny.</div></div>
 <main>
   <h1>Průvodka – 1 forma</h1>
-  <p class="hint" style="margin:-4px 0 10px;text-align:left">Jedna průvodka = jedna forma. Víc forem pro jednu firmu = odešli, vrať se, vyplň další.</p>
+  <div class="navod">
+    <b>Jedna průvodka = jedna forma.</b> Víc forem pro jednu firmu = odešli, vrať se, vyplň další.
+    <ol>
+      <li>Klepni INT, nebo EXT. Vyber firmu, vyplň formu a co se dělalo.</li>
+      <li><b>Odeslat do skupiny</b> → vyber dílenskou skupinu a odešli.</li>
+      <li>Ve skupině dej na své zprávě <b>Upravit</b> a přidej fotku. Víc fotek = <b>Odpovědět</b> a poslat album.</li>
+    </ol>
+    Jiná firma = <b>Nová zakázka</b>.
+  </div>
   <div class="seg big" id="kde"><button type="button" data-v="INT">INT – dílna</button><button type="button" data-v="EXT">EXT – výjezd</button></div>
   <p class="hint" id="kdehint">Nejdřív klepni na INT, nebo EXT.</p>
 
@@ -84,7 +94,7 @@
 
     <a class="btn primary" id="poslat" href="#">Odeslat do skupiny</a>
     <button class="btn ghost" id="nova" type="button">Nová zakázka (jiná firma)</button>
-    <p class="hint" id="hint">Vyber dílenskou skupinu a odešli. Pak ve skupině na své zprávě dej <b>Upravit</b> a přidej fotku, přiloží se k ní. Víc fotek = <b>Odpovědět</b> a poslat album. Další forma stejné firmy = vrať se sem, INT/EXT, datum i firma zůstanou. Jiná firma = Nová zakázka.</p>
+    <p class="hint" id="hint"></p>
   </div>
 </main>
 
