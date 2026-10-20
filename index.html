@@ -158,12 +158,26 @@
   }
   function chybi() { var ch = []; if (!kde) ch.push("INT nebo EXT"); if (!v("firma")) ch.push("firma"); if (!v("forma")) ch.push("forma"); return ch; }
   var hint = document.getElementById("hint");
+  // po odeslání: při návratu do průvodky se spodek vyčistí, hlavička (INT/EXT, datum, firma) zůstane (Petr 20. 10.)
+  var odeslano = false;
+  function vycistiSpodek() {
+    ["forma", "co", "maskovani", "abrazivo", "leptani", "sprej", "tukani", "zavareni", "rozlesteni", "kresleni", "dezen", "leskpred", "leskpo", "hodiny", "pozn"].forEach(function (id) { document.getElementById(id).value = ""; });
+    pisk = ""; document.querySelectorAll("#pisk button").forEach(function (x) { x.classList.remove("on"); });
+    lidi = "2"; document.querySelectorAll("#lidi button").forEach(function (x) { x.classList.toggle("on", x.dataset.v === "2"); });
+    document.getElementById("nahled").style.display = "none";
+    hint.textContent = "Odesláno. Formulář je připravený na další formu, hlavička zůstala.";
+    window.scrollTo({ top: 0, behavior: "smooth" }); document.getElementById("forma").focus();
+  }
+  function poNavratu() { if (odeslano) { odeslano = false; vycistiSpodek(); } }
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") poNavratu(); });
+  window.addEventListener("focus", poNavratu); window.addEventListener("pageshow", poNavratu);
   document.getElementById("poslat").addEventListener("click", function (e) {
     e.preventDefault();
     var ch = chybi(); if (ch.length) { hint.textContent = "Doplň: " + ch.join(", ") + "."; window.scrollTo({ top: 0, behavior: "smooth" }); return; }
     pamet("pruvodka-firma", v("firma")); pamet("pruvodka-kde", kde);
     var url = "https://t.me/share/url?url=" + encodeURIComponent(" ") + "&text=" + encodeURIComponent(text());
-    hint.textContent = "Ve skupině dej na svou zprávu Odpovědět a přilož fotky. Další forma = otevři odkaz znovu.";
+    hint.textContent = "Ve skupině dej na svou zprávu Odpovědět a přilož fotky. Až se vrátíš, bude tu čistý formulář pro další formu.";
+    odeslano = true; setTimeout(poNavratu, 4000);   // kdyby se stránka vůbec neschovala (sdílení v témže okně)
     if (tg && tg.openTelegramLink) { tg.openTelegramLink(url); } else { window.location.href = url; }
   });
   document.getElementById("nova").addEventListener("click", function () {
