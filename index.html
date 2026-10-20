@@ -84,7 +84,7 @@
 
     <a class="btn primary" id="poslat" href="#">Odeslat do skupiny</a>
     <button class="btn ghost" id="nova" type="button">Nová zakázka (jiná firma)</button>
-    <p class="hint" id="hint">Vyber dílenskou skupinu a odešli. Pak ve skupině na své zprávě dej <b>Upravit</b> a přidej fotku, přiloží se k ní. Víc fotek = <b>Odpovědět</b> a poslat album. Další forma stejné firmy = vrať se sem, firma zůstane. Jiná firma = Nová zakázka.</p>
+    <p class="hint" id="hint">Vyber dílenskou skupinu a odešli. Pak ve skupině na své zprávě dej <b>Upravit</b> a přidej fotku, přiloží se k ní. Víc fotek = <b>Odpovědět</b> a poslat album. Další forma stejné firmy = vrať se sem, INT/EXT, datum i firma zůstanou. Jiná firma = Nová zakázka.</p>
   </div>
 </main>
 
@@ -107,8 +107,9 @@
   document.querySelectorAll("#kde button").forEach(function (b) { b.addEventListener("click", function () { nastavKde(b.dataset.v); pamet("pruvodka-kde", kde); }); });
 
   var dnes = new Date().toISOString().slice(0, 10);
-  document.getElementById("datum").value = dnes; document.getElementById("datumdo").value = dnes;
-  document.getElementById("datum").addEventListener("change", function () { document.getElementById("datumdo").value = this.value; });
+  document.getElementById("datum").value = pamet("pruvodka-datum") || dnes; document.getElementById("datumdo").value = pamet("pruvodka-datumdo") || document.getElementById("datum").value;
+  document.getElementById("datum").addEventListener("change", function () { document.getElementById("datumdo").value = this.value; pamet("pruvodka-datum", this.value); pamet("pruvodka-datumdo", this.value); });
+  document.getElementById("datumdo").addEventListener("change", function () { pamet("pruvodka-datumdo", this.value); });
 
   var FIRMY = ["AGBA v.o.s.", "AIS Automotive Interior Systems Lány s.r.o.", "AIS Automotive Interior Systems s.r.o. - Tupá SK", "AIS AUTOMOTIVE INTERIOR SYSTEMS, s.r.o. - Velký Osek", "AKT plastikářská technologie Čechy, spol. s r.o.", "Aleš Vinter", "ALPS Electric Czech, s.r.o.", "Antolin Liban s.r.o.", "ATEK s.r.o.", "Auria Solutions Slovakia s. r. o.", "BENEŠ a LÁT a.s.", "Bodycote HT s.r.o.", "Bohemian Smithery Trade s.r.o", "BÖHM PLAST-TECHNIK a.s.", "BTL Medical Technologies s.r.o.", "CECHO - BOHUMIL CEMPÍREK s.r.o.", "Chotěbořské strojírny, a.s.", "Chropyňská strojírna, a.s.", "COLORplastic Automotive, spol. s.r.o.", "Červinka a spol. s.r.o.", "DEMOAUTOPLAST s.r.o.", "DESIGN OF EXACT ENGINEERING, s. r. o.", "EBERHARD Automatizace s.r.o.", "European Industrial Supply Company s.r.o.", "Faurecia Interior Systems Bohemia s.r.o.", "Faurecia Interiors Pardubice s.r.o.", "FAURECIA INTERIORS SLOVAKIA S.R.O HLOHOVEC", "Flídr plast s.r.o.", "FOR MORE s.r.o.", "FORMAT s.r.o.", "FORMPLAST-Svoboda s.r.o.", "Formy Tachov s.r.o.", "FREMACH TRNAVA, s.r.o.", "FREUDENBERG HOME AND CLEANING SOLUTIONS S.R.O.", "FYSAM Auto Decorative Slovakia s.r.o.", "G.T. TRADE, s.r.o.", "GAMARTIS s.r.o.", "Grammer Automotive CZ s.r.o. - Č.L.", "GRAMMER CZ, s.r.o. - Žatec", "HELLA AUTOTECHNIK NOVA, s.r.o.", "Hendrych Technik s.r.o.", "HPQ - Plast, s.r.o.", "IAC GROUP (SLOVAKIA) S.R.O.", "Ing. Jiří Bobek", "INOTECH ČR, spol.s r.o.", "INOX Technology a.s.", "Isolit-Bravo, spol. s r.o.", "Jan Kryspín - Nástrojařství", "JASPLASTIK-SK spol. s.r.o.", "Jifeng Automotive Interior CZ s.r.o.", "Jiri Kadlus", "JP-AUTO, s.r.o.", "KAVALIERGLASS, a.s.", "KDK Automotive Czech s.r.o.", "KMS-PT, s.r.o.", "Knoflíkářský průmysl Žirovnice a.s.", "Kovoplast Chlumec nad Cidlinou, a.s.", "KSM Castings CZ s.r.o.", "LINET spol. s r.o.", "Lisovna plastů, spol. s r.o.", "LUKOV Plast spol. s r.o.", "Magna Exteriors (Bohemia) s.r.o.", "Magna Exteriors (Meerane) GmbH", "Magna Exteriors (Nymburk) s.r.o.", "Magna Slovteca, s.r.o.", "MAINTAIN s.r.o.", "MEGATECH Industries Jablonec s.r.o.", "MEPAC SK, s.r.o.", "Motherson", "MSSL ADVANCEDPOLYMERS, s.r.o.", "NAFO Strakonice s.r.o.", "Nanogate Slovakia, s. r. o.", "Nástrojařství - Ondřej Kováč", "NÁSTROJÁRNA VINKLER s.r.o.", "NISAFORM s.r.o.", "Novares CZ Cerhovice s.r.o.", "OSMONT, s.r.o.", "Pavel Tokár", "PeHToo a. s.", "PERNOUD MOLD CE s.r.o.", "PLASTIC OMNIUM AUTO EXTERIORS, S.R.O.", "Plastik HT a.s.", "Plastoma výrobní družstvo", "PLASTON CR, s.r.o.", "Polplast Polska Sp. z o.o.", "Presplast, s.r.o.", "Proks Plastic, s.r.o.", "PROVYS CZ, s.r.o.", "REINERT Czech s.r.o.", "Röchling Automotive Kopřivnice s.r.o.", "SANKO GOSEI Czech, s.r.o.", "Sigmaplast a.s.", "Simoldes Plasticos Czech s.r.o.", "SIMOLDES PLASTICOS POLSKA SP Z O O", "SLER, s.r.o.", "SLOVARM, a.s.", "Směr, výrobní družstvo", "STROJTEX-GBHP s.r.o.", "Surtechno nv", "SUTOR Global s. r. o.", "Takada Industries Czech Republic s.r.o.", "Tecmaplast CZ, s.r.o.", "TESPOL Kolín - LISOVNA PLASTŮ s.r.o.", "THERMOPLASTIK s.r.o", "TRCZ s.r.o.", "TRENMA s.r.o.", "VALEO AUTOKLIMATIZACE k.s.", "Webasto Roof & Components Czech Republic s.r.o.", "WITTE ACCESS TECHNOLOGY s.r.o.", "WITTE Nejdek, spol. s r.o.", "Xpeqtis LTD", "Yanfeng Int. Automotive Technology Germany s.r.o. & Co. KG", "Yanfeng International Automotive Technology Czechia s.r.o.", "ZACH nástrojárna s.r.o.", "ZKW Slovakia s.r.o"];
   var ALIASY = {"forvia": ["Faurecia Interiors Pardubice s.r.o.", "Faurecia Interior Systems Bohemia s.r.o.", "FAURECIA INTERIORS SLOVAKIA S.R.O HLOHOVEC", "HELLA AUTOTECHNIK NOVA, s.r.o."], "rama": ["Proks Plastic, s.r.o."], "proks": ["Proks Plastic, s.r.o."], "bst": ["Bohemian Smithery Trade s.r.o"], "bartos": ["Bohemian Smithery Trade s.r.o"], "kpz": ["Knoflíkářský průmysl Žirovnice a.s."], "zirovnice": ["Knoflíkářský průmysl Žirovnice a.s."], "dexen": ["DESIGN OF EXACT ENGINEERING, s. r. o."], "magna liberec": ["Magna Exteriors (Bohemia) s.r.o."], "liberec": ["Magna Exteriors (Bohemia) s.r.o."], "nymburk": ["Magna Exteriors (Nymburk) s.r.o."], "zory": ["SIMOLDES PLASTICOS POLSKA SP Z O O"], "polsko": ["SIMOLDES PLASTICOS POLSKA SP Z O O", "Polplast Polska Sp. z o.o."], "rychnov": ["Simoldes Plasticos Czech s.r.o."], "hlohovec": ["FAURECIA INTERIORS SLOVAKIA S.R.O HLOHOVEC"], "pardubice": ["Faurecia Interiors Pardubice s.r.o."], "lany": ["AIS Automotive Interior Systems Lány s.r.o."], "cecho": ["CECHO - BOHUMIL CEMPÍREK s.r.o."], "cervinka": ["Červinka a spol. s.r.o."], "witte": ["WITTE Nejdek, spol. s r.o.", "WITTE ACCESS TECHNOLOGY s.r.o."], "nejdek": ["WITTE Nejdek, spol. s r.o."], "ostrov": ["WITTE ACCESS TECHNOLOGY s.r.o."]};
@@ -126,7 +127,7 @@
       hits.forEach(function (f) { var d = document.createElement("div"); d.textContent = f; d.addEventListener("click", function () { firmaInp.value = f; box.style.display = "none"; pamet("pruvodka-firma", f); }); box.appendChild(d); });
       box.style.display = "block";
     }
-    firmaInp.addEventListener("input", ukaz); firmaInp.addEventListener("focus", ukaz);
+    firmaInp.addEventListener("input", function () { ukaz(); pamet("pruvodka-firma", firmaInp.value.trim()); }); firmaInp.addEventListener("focus", ukaz);
     firmaInp.addEventListener("blur", function () { setTimeout(function () { box.style.display = "none"; }, 250); pamet("pruvodka-firma", firmaInp.value.trim()); });
   })();
 
@@ -172,14 +173,14 @@
   document.getElementById("poslat").addEventListener("click", function (e) {
     e.preventDefault();
     var ch = chybi(); if (ch.length) { hint.textContent = "Doplň: " + ch.join(", ") + "."; window.scrollTo({ top: 0, behavior: "smooth" }); return; }
-    pamet("pruvodka-firma", v("firma")); pamet("pruvodka-kde", kde);
+    pamet("pruvodka-firma", v("firma")); pamet("pruvodka-kde", kde); pamet("pruvodka-datum", v("datum")); pamet("pruvodka-datumdo", v("datumdo"));
     var url = "https://t.me/share/url?url=" + encodeURIComponent(" ") + "&text=" + encodeURIComponent(text());
     hint.textContent = "Ve skupině dej na své zprávě Upravit a přidej fotku (víc fotek = Odpovědět + album). Až se vrátíš, bude tu čistý formulář pro další formu.";
     odeslano = true; setTimeout(poNavratu, 4000);   // kdyby se stránka vůbec neschovala (sdílení v témže okně)
     if (tg && tg.openTelegramLink) { tg.openTelegramLink(url); } else { window.location.href = url; }
   });
   document.getElementById("nova").addEventListener("click", function () {
-    try { localStorage.removeItem("pruvodka-firma"); localStorage.removeItem("pruvodka-kde"); } catch (e) {}
+    try { ["pruvodka-firma", "pruvodka-kde", "pruvodka-datum", "pruvodka-datumdo"].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {}
     window.location.reload();
   });
 })();
