@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Průvodka formy</title>
+<script src="https://telegram.org/js/telegram-web-app.js?64"></script>
+<style>
+  :root { --bg: #f3f1ec; --card: #fff; --ink: #141414; --muted: #6b6b6b; --line: #cfcac0; --accent: #d9641e; --accent-ink: #fff; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #15161a; --card: #1f2126; --ink: #f1f1f1; --muted: #a3a3a3; --line: #3a3d45; } }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.3 -apple-system, "Helvetica Neue", Roboto, Arial, sans-serif; }
+  main { max-width: 520px; margin: 0 auto; padding: 14px 14px calc(24px + env(safe-area-inset-bottom)); }
+  h1 { font-size: 22px; margin: 4px 0 10px; }
+  .seg { display: flex; border: 1.5px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .seg button { flex: 1; padding: 9px 10px; border: 0; background: transparent; color: var(--ink); font-weight: 700; font-size: 16px; }
+  .seg button.on { background: var(--accent); color: var(--accent-ink); }
+  .seg.big { margin-bottom: 12px; } .seg.big button { padding: 14px 10px; font-size: 18px; }
+  .seg.mini { flex: 0 0 auto; } .seg.mini button { padding: 6px 10px; font-size: 14px; }
+  .card { background: var(--card); border-radius: 12px; padding: 10px 12px; margin-bottom: 10px; }
+  .field { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+  .field:last-child { border-bottom: 0; }
+  .field label { flex: 0 0 44%; color: var(--muted); font-size: 15px; }
+  .field input, .field textarea { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 18px; padding: 6px 0; outline: none; }
+  .field .unit { color: var(--muted); font-size: 14px; flex: 0 0 auto; min-width: 34px; text-align: right; }
+  .field textarea { resize: vertical; min-height: 64px; }
+  .wide label { flex-basis: 30%; }
+  #naseptavac { flex-basis: 100%; display: none; max-height: 220px; overflow-y: auto; border-top: 1px solid var(--line); margin-top: 4px; }
+  #naseptavac div { padding: 10px 6px; border-bottom: 1px solid var(--line); font-size: 16px; } #naseptavac div:last-child { border-bottom: 0; }
+  .zamceno { opacity: .35; pointer-events: none; }
+  .btn { display: block; width: 100%; padding: 15px; border-radius: 12px; border: 0; font: inherit; font-weight: 700; font-size: 18px; text-align: center; text-decoration: none; cursor: pointer; margin-top: 10px; }
+  .primary { background: var(--accent); color: var(--accent-ink); } .ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+  .hint { color: var(--muted); font-size: 13px; text-align: center; margin-top: 8px; }
+  pre { white-space: pre-wrap; font: 14px/1.35 ui-monospace, Menlo, monospace; background: var(--card); border-radius: 12px; padding: 12px; display: none; margin-top: 8px; }
+  #gate { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; z-index: 9; }
+  #gate input { font-size: 28px; letter-spacing: 8px; text-align: center; width: 180px; padding: 10px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); }
+  #gate.off { display: none; }
+</style>
+</head>
+<body>
+<div id="gate"><div style="font-weight:700;font-size:18px">Průvodka formy</div><input id="pin" inputmode="numeric" maxlength="4" placeholder="PIN" autofocus><div class="hint" id="gatehint">Zadej PIN dílny.</div></div>
+<main>
+  <h1>Průvodka formy</h1>
+  <div class="seg big" id="kde"><button type="button" data-v="INT">INT – dílna</button><button type="button" data-v="EXT">EXT – výjezd</button></div>
+  <p class="hint" id="kdehint">Nejdřív klepni na INT, nebo EXT.</p>
+
+  <div id="telo" class="zamceno">
+    <div class="card">
+      <div class="field"><label for="datum">Datum od</label><input id="datum" type="date"></div>
+      <div class="field"><label for="datumdo">Datum do</label><input id="datumdo" type="date"></div>
+      <div class="field" style="flex-wrap:wrap"><label for="firma">Firma</label><input id="firma" placeholder="začni psát a vyber" autocomplete="off" autocorrect="off" autocapitalize="off"><div id="naseptavac"></div></div>
+      <div class="field"><label for="forma">Forma / díl</label><input id="forma" placeholder="číslo nebo název" autocomplete="off"></div>
+      <div class="field"><label for="co">Co</label><input id="co" placeholder="oprava, pískování, sekanec…" autocomplete="off"></div>
+    </div>
+    <div class="card">
+      <div class="field"><label for="maskovani">maskování</label><input id="maskovani" inputmode="decimal" placeholder="–"><span class="unit">hod</span></div>
+      <div class="field"><label>pískování</label><span class="seg mini" id="pisk"><button type="button" data-v="lokálně">lok.</button><button type="button" data-v="celé">celé</button></span><input id="abrazivo" placeholder="F60, B134, mix…" autocomplete="off" style="margin-left:8px"></div>
+      <div class="field"><label for="leptani">leptání</label><input id="leptani" inputmode="numeric" placeholder="–"><span class="unit">×</span></div>
+      <div class="field"><label for="sprej">oprava sprej</label><input id="sprej" inputmode="numeric" placeholder="–"><span class="unit">míst</span></div>
+      <div class="field"><label for="tukani">ťukání</label><input id="tukani" inputmode="decimal" placeholder="–"><span class="unit">cm</span></div>
+      <div class="field"><label for="zavareni">zavaření</label><input id="zavareni" inputmode="decimal" placeholder="–"><span class="unit">cm</span></div>
+      <div class="field"><label for="rozlesteni">rozleštění</label><input id="rozlesteni" inputmode="decimal" placeholder="–"><span class="unit">cm</span></div>
+      <div class="field"><label for="kresleni">kreslení / retuš</label><input id="kresleni" inputmode="decimal" placeholder="–"><span class="unit">cm</span></div>
+      <div class="field"><label for="dezen">nový dezén</label><input id="dezen" placeholder="typ, hloubka" autocomplete="off"><span class="unit"></span></div>
+    </div>
+    <div class="card">
+      <div class="field"><label for="leskpred">Lesk před</label><input id="leskpred" inputmode="decimal" placeholder="–"></div>
+      <div class="field"><label for="leskpo">Lesk po (nebo poměr)</label><input id="leskpo" placeholder="např. 7, nebo 4:1" autocomplete="off"></div>
+    </div>
+    <div class="card">
+      <div class="field"><label for="hodiny">Hodiny cca celkem</label><input id="hodiny" inputmode="decimal" placeholder="–"></div>
+      <div class="field"><label>Počet lidí</label><span class="seg mini" id="lidi"><button type="button" data-v="1">1</button><button type="button" data-v="2" class="on">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button></span></div>
+      <div class="field wide"><label for="pozn">Poznámka</label><textarea id="pozn" placeholder="co ještě stojí za zmínku"></textarea></div>
+    </div>
+
+    <a class="btn primary" id="poslat" href="#">Odeslat do skupiny</a>
+    <button class="btn ghost" id="kopirovat" type="button">Kopírovat text</button>
+    <button class="btn ghost" id="nova" type="button">Nová zakázka (jiná firma)</button>
+    <p class="hint" id="hint">Vyber dílenskou skupinu a odešli. Pak na svou zprávu dej <b>Odpovědět</b> a přilož fotky. Další forma stejné firmy = otevři znovu, firma zůstane. Jiná firma = Nová zakázka.</p>
+    <pre id="nahled"></pre>
+  </div>
+</main>
+
+<script>
+(function () {
+  var tg = window.Telegram && window.Telegram.WebApp; if (tg) { try { tg.ready(); tg.expand(); } catch (e) {} }
+  var PIN = "2008";
+  function pamet(k, v) { try { if (v === undefined) return localStorage.getItem(k) || ""; localStorage.setItem(k, v); } catch (e) { return ""; } }
+  (function gate() {
+    var g = document.getElementById("gate"), i = document.getElementById("pin");
+    if (pamet("pruvodka-pin") === PIN) { g.classList.add("off"); return; }
+    i.addEventListener("input", function () {
+      if (i.value === PIN) { pamet("pruvodka-pin", PIN); g.classList.add("off"); }
+      else if (i.value.length >= 4) { document.getElementById("gatehint").textContent = "Špatný PIN."; i.value = ""; }
+    });
+  })();
+
+  var kde = "";
+  function nastavKde(v) { kde = v; document.querySelectorAll("#kde button").forEach(function (x) { x.classList.toggle("on", x.dataset.v === v); }); document.getElementById("telo").classList.remove("zamceno"); document.getElementById("kdehint").style.display = "none"; }
+  document.querySelectorAll("#kde button").forEach(function (b) { b.addEventListener("click", function () { nastavKde(b.dataset.v); pamet("pruvodka-kde", kde); }); });
+
+  var dnes = new Date().toISOString().slice(0, 10);
+  document.getElementById("datum").value = dnes; document.getElementById("datumdo").value = dnes;
+  document.getElementById("datum").addEventListener("change", function () { document.getElementById("datumdo").value = this.value; });
+
+  var FIRMY = ["AAH PLASTICS s.r.o.", "AGBA v.o.s.", "AIS Automotive Interior Systems Lány s.r.o.", "AIS Automotive Interior Systems s.r.o. - Tupá SK", "AIS AUTOMOTIVE INTERIOR SYSTEMS, s.r.o. - Velký Osek", "AKT plastikářská technologie Čechy, spol. s r.o.", "Aleš Vinter", "ALPS Electric Czech, s.r.o.", "Antolin Liban s.r.o.", "Ascorium Most s.r.o.", "ATEK s.r.o.", "Auria Solutions Slovakia s. r. o.", "BENEŠ a LÁT a.s.", "Black & Decker (Czech) s.r.o.", "Bodycote HT s.r.o.", "Bohemian Smithery Trade s.r.o", "BÖHM PLAST-TECHNIK a.s.", "BTL Medical Technologies s.r.o.", "CECHO - BOHUMIL CEMPÍREK s.r.o.", "Chotěbořské strojírny, a.s.", "Chropyňská strojírna, a.s.", "COLORplastic Automotive, spol. s.r.o.", "Červinka a spol. s.r.o.", "DAIHO CZECH s.r.o.", "Daikin Industries Czech Republic s.r.o.", "DEMOAUTOPLAST s.r.o.", "DESIGN OF EXACT ENGINEERING, s. r. o.", "EBERHARD Automatizace s.r.o.", "European Industrial Supply Company s.r.o.", "Eurostyle Systems Liptovský Mikuláš", "Faurecia Interior Systems Bohemia s.r.o.", "Faurecia Interiors Pardubice s.r.o.", "FAURECIA INTERIORS SLOVAKIA S.R.O HLOHOVEC", "Flídr plast s.r.o.", "FOR MORE s.r.o.", "FORMAT s.r.o.", "Formithis s. r. o.", "FORMPLAST-Svoboda s.r.o.", "Formy Tachov s.r.o.", "forteq Czech s.r.o.", "FOXEL elektro s.r.o.", "Fremach Morava, s.r.o.", "FREMACH TRNAVA, s.r.o.", "FREUDENBERG HOME AND CLEANING SOLUTIONS S.R.O.", "FYSAM Auto Decorative Slovakia s.r.o.", "G.T. TRADE, s.r.o.", "GAMARTIS s.r.o.", "Grammer Automotive CZ s.r.o. - Č.L.", "GRAMMER CZ - ŽATEC", "GRAMMER CZ, s.r.o. - Žatec", "HELLA AUTOTECHNIK NOVA, s.r.o.", "Hendrych Technik s.r.o.", "HOEKO - Automotive s.r.o.", "HPQ - Plast, s.r.o.", "Husqvarna Manufacturing CZ s.r.o.", "IAC GROUP (SLOVAKIA) S.R.O.", "Ing. Jiří Bobek", "INOTECH ČR, spol.s r.o.", "INOX Technology a.s.", "Isolit-Bravo, spol. s r.o.", "Jan Kryspín - Nástrojařství", "JASPLASTIK-SK spol. s.r.o.", "JELINEK-TRADING spol. s r.o.", "Jifeng Automotive Interior CZ s.r.o.", "Jiri Kadlus", "JP-AUTO, s.r.o.", "KAVALIERGLASS, a.s.", "KDK Automotive Czech s.r.o.", "KMS-PT, s.r.o.", "Knoflíkářský průmysl Žirovnice a.s.", "Kovoplast Chlumec nad Cidlinou, a.s.", "KSM Castings CZ s.r.o.", "Linaset, a.s.", "LINET spol. s r.o.", "Lisovna plastů, spol. s r.o.", "LPH a.s.", "LUKOV Plast spol. s r.o.", "Magna Exteriors (Bohemia) s.r.o.", "Magna Exteriors (Meerane) GmbH", "Magna Exteriors (Nymburk) s.r.o.", "Magna Slovteca, s.r.o.", "MAINTAIN s.r.o.", "MEGATECH Industries Jablonec s.r.o.", "MEPAC SK, s.r.o.", "MJ PLASTY, s.r.o.", "Mobis Automotive System Czech s.r.o.", "Motherson", "MSSL ADVANCEDPOLYMERS, s.r.o.", "Müller-Technik CZ s.r.o.", "NAFO Strakonice s.r.o.", "Nanogate Slovakia, s. r. o.", "Nástrojařství - Ondřej Kováč", "NÁSTROJÁRNA VINKLER s.r.o.", "NISAFORM s.r.o.", "Novares CZ Cerhovice s.r.o.", "OKK tools s.r.o.", "OKULA Nýrsko a.s.", "OSMONT, s.r.o.", "Paerk tools s.r.o.", "Pavel Tokár", "PD PLAST, spol. s r. o.", "PeHToo a. s.", "PERNOUD MOLD CE s.r.o.", "PILSEN INJECTION S.R.O.", "PLASTIC OMNIUM AUTO EXTERIORS, S.R.O.", "Plastik HT a.s.", "Plastoma výrobní družstvo", "PLASTON CR, s.r.o.", "PO LIGHTING CZECH s.r.o.", "Polplast Polska Sp. z o.o.", "Presplast, s.r.o.", "PRIMA POPRAD, s.r.o.", "Proks Plastic, s.r.o.", "PROVYS CZ, s.r.o.", "REINERT Czech s.r.o.", "ROS Most", "Röchling Automotive Kopřivnice s.r.o.", "Saar Gummi Czech s.r.o.", "SabriScan Oy", "Samvardhana Motherson Reydel Companies", "SANKO GOSEI Czech, s.r.o.", "Sigmaplast a.s.", "Simoldes Plasticos Czech s.r.o.", "SIMOLDES PLASTICOS POLSKA SP Z O O", "SKMOLD, s.r.o.", "SLER, s.r.o.", "SLOVARM, a.s.", "Směr, výrobní družstvo", "STROJTEX-GBHP s.r.o.", "Surtechno nv", "SUTOR Global s. r. o.", "Takada Industries Czech Republic s.r.o.", "Tecmaplast CZ, s.r.o.", "TESPOL Kolín - LISOVNA PLASTŮ s.r.o.", "Thermoflex Europe a.s.", "THERMOPLASTIK s.r.o", "TRCZ s.r.o.", "TRENMA s.r.o.", "VALEO AUTOKLIMATIZACE k.s.", "VALEX, s.r.o.", "Veeser Plastic Slovakia k. s.", "VISCUMA PLASTIC, a.s.", "Viscuma s.r.o.", "VURAL a.s.", "Webasto Roof & Components Czech Republic s.r.o.", "WITTE ACCESS TECHNOLOGY s.r.o.", "WITTE Nejdek, spol. s r.o.", "Xpeqtis LTD", "Yanfeng Int. Automotive Technology Germany s.r.o. & Co. KG", "Yanfeng International Automotive Technology Czechia s.r.o.", "Yanfeng International Automotive Technology Slovakia s.r.o.", "ZACH nástrojárna s.r.o.", "Zelinger plast s.r.o.", "ZKW Slovakia s.r.o"];
+  var ALIASY = {"forvia": ["Faurecia Interiors Pardubice s.r.o.", "Faurecia Interior Systems Bohemia s.r.o.", "FAURECIA INTERIORS SLOVAKIA S.R.O HLOHOVEC", "HELLA AUTOTECHNIK NOVA, s.r.o."], "rama": ["Proks Plastic, s.r.o."], "proks": ["Proks Plastic, s.r.o."], "bst": ["Bohemian Smithery Trade s.r.o"], "bartos": ["Bohemian Smithery Trade s.r.o"], "kpz": ["Knoflíkářský průmysl Žirovnice a.s."], "zirovnice": ["Knoflíkářský průmysl Žirovnice a.s."], "dexen": ["DESIGN OF EXACT ENGINEERING, s. r. o."], "magna liberec": ["Magna Exteriors (Bohemia) s.r.o."], "liberec": ["Magna Exteriors (Bohemia) s.r.o."], "nymburk": ["Magna Exteriors (Nymburk) s.r.o."], "zory": ["SIMOLDES PLASTICOS POLSKA SP Z O O"], "polsko": ["SIMOLDES PLASTICOS POLSKA SP Z O O", "Polplast Polska Sp. z o.o."], "rychnov": ["Simoldes Plasticos Czech s.r.o."], "hlohovec": ["FAURECIA INTERIORS SLOVAKIA S.R.O HLOHOVEC"], "pardubice": ["Faurecia Interiors Pardubice s.r.o."], "lany": ["AIS Automotive Interior Systems Lány s.r.o."], "cecho": ["CECHO - BOHUMIL CEMPÍREK s.r.o."], "cervinka": ["Červinka a spol. s.r.o."], "witte": ["WITTE Nejdek, spol. s r.o.", "WITTE ACCESS TECHNOLOGY s.r.o."], "nejdek": ["WITTE Nejdek, spol. s r.o."], "ostrov": ["WITTE ACCESS TECHNOLOGY s.r.o."]};
+  function norm(t) { return t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
+  var firmaInp = document.getElementById("firma");
+  (function naseptavac() {
+    var box = document.getElementById("naseptavac");
+    function ukaz() {
+      var q = norm(firmaInp.value.trim()); box.innerHTML = "";
+      if (q.length < 2) { box.style.display = "none"; return; }
+      var hits = FIRMY.filter(function (f) { return norm(f).indexOf(q) >= 0; });
+      Object.keys(ALIASY).forEach(function (k) { if (k.indexOf(q) >= 0 || q.indexOf(k) >= 0) ALIASY[k].forEach(function (f) { if (hits.indexOf(f) < 0) hits.push(f); }); });
+      hits = hits.slice(0, 12);
+      if (!hits.length) { box.style.display = "none"; return; }
+      hits.forEach(function (f) { var d = document.createElement("div"); d.textContent = f; d.addEventListener("click", function () { firmaInp.value = f; box.style.display = "none"; pamet("pruvodka-firma", f); }); box.appendChild(d); });
+      box.style.display = "block";
+    }
+    firmaInp.addEventListener("input", ukaz); firmaInp.addEventListener("focus", ukaz);
+    firmaInp.addEventListener("blur", function () { setTimeout(function () { box.style.display = "none"; }, 250); pamet("pruvodka-firma", firmaInp.value.trim()); });
+  })();
+
+  // hlavička z minula: INT/EXT a firma (datum je vždy dnešek)
+  if (pamet("pruvodka-kde")) nastavKde(pamet("pruvodka-kde"));
+  if (pamet("pruvodka-firma")) firmaInp.value = pamet("pruvodka-firma");
+
+  var pisk = "", lidi = "2";
+  document.querySelectorAll("#pisk button").forEach(function (b) { b.addEventListener("click", function () { pisk = (pisk === b.dataset.v) ? "" : b.dataset.v; document.querySelectorAll("#pisk button").forEach(function (x) { x.classList.toggle("on", x.dataset.v === pisk); }); }); });
+  document.querySelectorAll("#lidi button").forEach(function (b) { b.addEventListener("click", function () { lidi = (lidi === b.dataset.v) ? "" : b.dataset.v; document.querySelectorAll("#lidi button").forEach(function (x) { x.classList.toggle("on", x.dataset.v === lidi); }); }); });
+
+  function v(id) { return (document.getElementById(id).value || "").trim(); }
+  function datumCz(iso) { var p = iso.split("-"); return p.length === 3 ? (+p[2]) + ". " + (+p[1]) + ". " + p[0] : iso; }
+  function stitek(f) { var w = norm(f).match(/[a-z0-9]+/g) || ["firma"]; return "#" + w[0]; }
+  function text() {
+    var od = datumCz(v("datum")), dd = datumCz(v("datumdo") || v("datum"));
+    var r = ["PRŮVODKA · " + v("firma").toUpperCase() + " · " + (od === dd ? od : od + " – " + dd) + " · " + kde, "Forma: " + v("forma")];
+    if (v("co")) r.push("Co: " + v("co"));
+    if (v("maskovani")) r.push("maskování: " + v("maskovani") + " hod");
+    if (pisk || v("abrazivo")) r.push("pískování: " + [pisk, v("abrazivo")].filter(Boolean).join(", "));
+    [["leptani", "leptání", "×"], ["sprej", "oprava sprej", " míst"], ["tukani", "ťukání", " cm"], ["zavareni", "zavaření", " cm"], ["rozlesteni", "rozleštění", " cm"], ["kresleni", "kreslení/retuš", " cm"], ["dezen", "nový dezén", ""]]
+      .forEach(function (f) { if (v(f[0])) r.push(f[1] + ": " + v(f[0]) + f[2]); });
+    if (v("leskpred") || v("leskpo")) r.push("Lesk před: " + (v("leskpred") || "–") + " · po: " + (v("leskpo") || "–"));
+    if (v("hodiny") || lidi) r.push("Hodiny cca: " + (v("hodiny") || "–") + " · lidí: " + (lidi || "–"));
+    if (v("pozn")) r.push("Poznámka: " + v("pozn"));
+    r.push(stitek(v("firma")));
+    return r.join("\n");
+  }
+  function chybi() { var ch = []; if (!kde) ch.push("INT nebo EXT"); if (!v("firma")) ch.push("firma"); if (!v("forma")) ch.push("forma"); return ch; }
+  var hint = document.getElementById("hint");
+  document.getElementById("poslat").addEventListener("click", function (e) {
+    e.preventDefault();
+    var ch = chybi(); if (ch.length) { hint.textContent = "Doplň: " + ch.join(", ") + "."; window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+    pamet("pruvodka-firma", v("firma")); pamet("pruvodka-kde", kde);
+    var url = "https://t.me/share/url?url=" + encodeURIComponent(" ") + "&text=" + encodeURIComponent(text());
+    hint.textContent = "Ve skupině dej na svou zprávu Odpovědět a přilož fotky. Další forma = otevři odkaz znovu.";
+    if (tg && tg.openTelegramLink) { tg.openTelegramLink(url); } else { window.location.href = url; }
+  });
+  document.getElementById("nova").addEventListener("click", function () {
+    try { localStorage.removeItem("pruvodka-firma"); localStorage.removeItem("pruvodka-kde"); } catch (e) {}
+    window.location.reload();
+  });
+  document.getElementById("kopirovat").addEventListener("click", function () {
+    var t = text(), pre = document.getElementById("nahled"); pre.textContent = t; pre.style.display = "block";
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function () { hint.textContent = "Zkopírováno. Vlož do skupiny a přihoď fotky."; }, function () { hint.textContent = "Označ text níže a zkopíruj ručně."; });
+    else hint.textContent = "Označ text níže a zkopíruj ručně.";
+  });
+})();
+</script>
+</body>
+</html>
