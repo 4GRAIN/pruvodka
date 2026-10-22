@@ -151,7 +151,7 @@
 
   function v(id) { return (document.getElementById(id).value || "").trim(); }
   function datumCz(iso) { var p = iso.split("-"); return p.length === 3 ? (+p[2]) + ". " + (+p[1]) + ". " + p[0] : iso; }
-  function stitek(f) { var w = norm(f).match(/[a-z0-9]+/g) || ["firma"]; return "#" + w[0]; }
+  function stitek(f) { var w = (norm(f).match(/[a-z0-9]+/g) || []).filter(function (x) { return x.length > 1 && !/^(spol|sro|gmbh|ltd|inc|ing)$/.test(x); }); return "#" + (w.length > 1 ? w[0] + w[w.length - 1] : (w[0] || "firma")); }   // první + poslední slovo bez s.r.o. apod. (Petr 22. 10.: #plaston jsme my; AIS Lány/SK, Magna Bohemia/Nymburk se musí rozlišit; 0 kolizí ze 115 firem)
   function text() {
     var od = datumCz(v("datum")), dd = datumCz(v("datumdo") || v("datum"));
     var r = [v("firma").toUpperCase() + " · " + (od === dd ? od : od + " – " + dd) + " · " + kde, "Forma: " + v("forma")];
