@@ -154,7 +154,7 @@
   function stitek(f) { var w = norm(f).match(/[a-z0-9]+/g) || ["firma"]; return "#" + w[0]; }
   function text() {
     var od = datumCz(v("datum")), dd = datumCz(v("datumdo") || v("datum"));
-    var r = ["PRŮVODKA · " + v("firma").toUpperCase() + " · " + (od === dd ? od : od + " – " + dd) + " · " + kde, "Forma: " + v("forma")];
+    var r = [v("firma").toUpperCase() + " · " + (od === dd ? od : od + " – " + dd) + " · " + kde, "Forma: " + v("forma")];
     if (v("co")) r.push("Co: " + v("co"));
     if (v("maskovani")) r.push("maskování: " + v("maskovani") + " hod");
     if (pisk || v("abrazivo")) r.push("pískování: " + [pisk, v("abrazivo")].filter(Boolean).join(", "));
@@ -163,7 +163,7 @@
     if (v("leskpred") || v("leskpo")) r.push("Lesk před: " + (v("leskpred") || "–") + " · po: " + (v("leskpo") || "–"));
     if (v("hodiny") || lidi) r.push("Hodiny cca: " + (v("hodiny") || "–") + " · lidí: " + (lidi || "–"));
     if (v("pozn")) r.push("Poznámka: " + v("pozn"));
-    r.push(stitek(v("firma")));
+    r.push(stitek(v("firma")) + " #průvodka");
     return r.join("\n");
   }
   function chybi() { var ch = []; if (!kde) ch.push("INT nebo EXT"); if (!v("firma")) ch.push("firma"); if (!v("forma")) ch.push("forma"); return ch; }
