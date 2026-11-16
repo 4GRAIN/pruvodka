@@ -39,6 +39,8 @@
   .btn { display: block; width: 100%; padding: 15px; border-radius: 12px; border: 0; font: inherit; font-weight: 700; font-size: 18px; text-align: center; text-decoration: none; cursor: pointer; margin-top: 10px; }
   .primary { background: var(--accent); color: var(--accent-ink); } .ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
   .hint { color: var(--muted); font-size: 16px; text-align: center; margin-top: 8px; }
+  .hint.varuj { color: var(--accent); font-weight: 700; font-size: 20px; }   /* 16. 11.: „Doplň: …“ nahoře, kam formulář odskočí (Petr) */
+  .chybi { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 12px; }
   .navod { font-size: 17px; line-height: 1.5; color: var(--ink); background: var(--card); border-radius: 12px; padding: 10px 12px; margin: 0 0 12px; }
   .navod ol { margin: 6px 0; padding-left: 20px; } .navod li { margin: 2px 0; }
   pre { white-space: pre-wrap; font: 14px/1.35 ui-monospace, Menlo, monospace; background: var(--card); border-radius: 12px; padding: 12px; display: none; margin-top: 8px; }
@@ -51,6 +53,7 @@
 <div id="gate"><div style="font-weight:700;font-size:18px">Průvodka – 1 forma</div><input id="pin" inputmode="numeric" maxlength="4" placeholder="PIN" autofocus><div class="hint" id="gatehint">Zadej PIN dílny.</div></div>
 <main>
   <h1 style="text-align:center">Průvodka – 1 forma</h1>
+  <p class="hint" id="hintTop" style="margin:0 0 8px"></p>
   <p class="hint" style="margin-top:0;font-size:22px;font-weight:600">Je nás málo, ale samý dobrý.</p>
   <button class="btn ghost" id="nova2" type="button" style="margin-bottom:12px">Nová zakázka (jiná firma)</button>
   <div class="seg big" id="kde"><button type="button" data-v="INT">INT – dílna</button><button type="button" data-v="EXT">EXT – výjezd</button></div>
@@ -163,7 +166,20 @@
     return r.join("\n");
   }
   function chybi() { var ch = []; if (!kde) ch.push("INT nebo EXT"); if (!v("firma")) ch.push("firma"); if (!v("forma")) ch.push("forma"); return ch; }
-  var hint = document.getElementById("hint");
+  var hint = document.getElementById("hint"), hintTop = document.getElementById("hintTop");
+  // 16. 11. (Petr): dílna neviděla „Doplň: …“ — hláška byla dole pod tlačítkem, formulář přitom odskočil nahoru. Teď nahoře + oranžový rámeček u chybějících polí.
+  var oznaceno = false;
+  function oznac() {
+    if (!oznaceno) return;
+    var ch = chybi();
+    document.getElementById("kde").classList.toggle("chybi", !kde);
+    document.getElementById("firma").closest(".field").classList.toggle("chybi", !v("firma"));
+    document.getElementById("forma").closest(".field").classList.toggle("chybi", !v("forma"));
+    if (ch.length) { hintTop.textContent = "Doplň: " + ch.join(", ") + "."; hintTop.classList.add("varuj"); }
+    else { oznaceno = false; hintTop.textContent = ""; hintTop.classList.remove("varuj"); }
+  }
+  document.getElementById("kde").addEventListener("click", oznac);
+  ["firma", "forma"].forEach(function (id) { document.getElementById(id).addEventListener("input", oznac); });
   // po odeslání: při návratu do průvodky se spodek vyčistí, hlavička (INT/EXT, datum, firma) zůstane (Petr 20. 10.)
   var odeslano = false;
   function vycistiSpodek() {
@@ -171,6 +187,7 @@
     pisk = ""; document.querySelectorAll("#pisk button").forEach(function (x) { x.classList.remove("on"); });
     lidi = "2"; document.querySelectorAll("#lidi button").forEach(function (x) { x.classList.toggle("on", x.dataset.v === "2"); });
     hint.textContent = "Odesláno. Další forma stejné firmy? Vyplň a odešli znovu, hlavička zůstala.";
+    hintTop.textContent = "Odesláno. Další forma stejné firmy? Vyplň a odešli znovu, hlavička zůstala."; hintTop.classList.remove("varuj");
     window.scrollTo({ top: 0, behavior: "smooth" }); document.getElementById("forma").focus();
   }
   function poNavratu() { if (odeslano) { odeslano = false; vycistiSpodek(); } }
@@ -178,7 +195,8 @@
   window.addEventListener("focus", poNavratu); window.addEventListener("pageshow", poNavratu);
   document.getElementById("poslat").addEventListener("click", function (e) {
     e.preventDefault();
-    var ch = chybi(); if (ch.length) { hint.textContent = "Doplň: " + ch.join(", ") + "."; window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+    var ch = chybi(); if (ch.length) { oznaceno = true; oznac(); hint.textContent = "Doplň: " + ch.join(", ") + "."; window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+    hintTop.textContent = ""; hintTop.classList.remove("varuj");
     pamet("pruvodka-firma", v("firma")); pamet("pruvodka-kde", kde); pamet("pruvodka-datum", v("datum")); pamet("pruvodka-datumdo", v("datumdo"));
     var url = "https://t.me/share/url?url=" + encodeURIComponent(" ") + "&text=" + encodeURIComponent(text());
     hint.textContent = "Ve skupině dej na své zprávě Upravit a přidej fotku (víc fotek = Odpovědět + album). Až se vrátíš, bude tu čistý formulář pro další formu.";
