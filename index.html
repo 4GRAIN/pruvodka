@@ -69,6 +69,7 @@
     <p class="hint" id="zbytekhint">Vyplň datum od, firmu a formu, pak se otevře zbytek.</p>
     <div id="zbytek" class="zamceno">
     <div class="card">
+      <div class="field"><label for="kavity">Počet kavit</label><input id="kavity" inputmode="numeric" placeholder="–"><span class="unit">ks</span></div>
       <div class="field"><label for="co">Co</label><input id="co" placeholder="oprava, pískování, sekanec…" autocomplete="off"></div>
       <div class="field"><label for="maskovani">maskování</label><input id="maskovani" inputmode="decimal" placeholder="–"><span class="unit">hod</span></div>
       <!-- 16. 11. (Petr): pískování pohromadě — velikost formy (cena), brusivo/poměr, lesk před · po; lokálně/celé pryč (cenu neovlivňuje) -->
@@ -156,6 +157,7 @@
   function text() {
     var od = datumCz(v("datum")), dd = datumCz(v("datumdo") || v("datum"));
     var r = [v("firma").toUpperCase() + " · " + (od === dd ? od : od + " – " + dd) + " · " + kde, "Forma: " + v("forma")];
+    if (v("kavity")) r.push("Kavity: " + v("kavity") + " ks");
     if (v("co")) r.push("Co: " + v("co"));
     if (v("maskovani")) r.push("maskování: " + v("maskovani") + " hod");
     if (velikost) r.push("Velikost: " + velikost);                                   // cena.py řádek Velikost (ceník PÍSKOVÁNÍ, 13. 11.)
@@ -192,7 +194,7 @@
   // po odeslání: při návratu do průvodky se spodek vyčistí, hlavička (INT/EXT, datum, firma) zůstane (Petr 20. 10.)
   var odeslano = false;
   function vycistiSpodek() {
-    ["forma", "co", "maskovani", "abrazivo", "leptani", "sprej", "tukani", "zavareni", "rozlesteni", "kresleni", "dezen", "leskpred", "leskpo", "hodiny", "pozn"].forEach(function (id) { document.getElementById(id).value = ""; });
+    ["forma", "kavity", "co", "maskovani", "abrazivo", "leptani", "sprej", "tukani", "zavareni", "rozlesteni", "kresleni", "dezen", "leskpred", "leskpo", "hodiny", "pozn"].forEach(function (id) { document.getElementById(id).value = ""; });
     velikost = ""; document.querySelectorAll("#velikost button").forEach(function (x) { x.classList.remove("on"); });
     odemkni();
     lidi = "2"; document.querySelectorAll("#lidi button").forEach(function (x) { x.classList.toggle("on", x.dataset.v === "2"); });
